@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARAC VITRINI</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <nav>
+        <div class="logo"><em>AUTO</em> PARTS</div>
+        
+        <ul class="nav-links" id="navLinks">
+            <li><a href="#" class="active" data-page="home">Anasayfa</a></li>
+            <li><a href="#" data-page="categories">Kategoriler</a></li>
+            <li><a href="#" data-page="about">Hakkımızda</a></li>
+            <li><a href="#" data-page="contact">İletişim</a></li>
+        </ul>
+        
+        <div class="nav-right">
+            <button class="nav-btn" id="cartBtn">
+                <i class="fas fa-shopping-bag"></i>
+                <span class="badge" id="cartBadge">0</span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="root">
+        </div>
+
+    <div class="cart-overlay" id="cartOverlay"></div>
+    
+    <div class="cart-panel" id="cartPanel">
+        <div class="cart-head">
+            <h3>SEPETİM</h3>
+            <button class="cart-close" id="cartClose"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <div class="cart-body" id="cartBody">
+            </div>
+        
+        <div class="cart-foot">
+            <div class="cart-total-row">
+                <span class="cart-total-lbl">Ara Toplam</span>
+                <span class="cart-total-val" id="cartTotal">$0.00</span>
+            </div>
+            <button class="add-btn" style="background-color: var(--red); color: white; border: none; padding: 15px; font-size: 1rem;">
+                Ödemeye Geç <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <footer>
+        <div>
+            <div class="logo" style="font-size: 1.2rem;"><em>AUTO</em> PARTS</div>
+            <p style="margin-top:4px">© 2026 — Tüm Hakları Saklıdır</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+    
+</body>
+</html>
