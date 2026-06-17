@@ -14,11 +14,21 @@
 <body>
 
     <nav>
-        <div class="logo"><em>AUTO</em> PARTS</div>
+        <div class="logo" onclick="AutoPartsApp.navigate('home')" style="cursor: pointer;">
+        <em>AUTO</em> PARTS
+        </div>
         
         <ul class="nav-links" id="navLinks">
             <li><a href="#" class="active" data-page="home">Anasayfa</a></li>
-            <li><a href="#" data-page="categories">Kategoriler</a></li>
+            <li class="dropdown">
+                <a href="#" data-page="categories" class="dropdown-toggle">Kategoriler <i class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 5px;"></i></a>
+                <ul class="dropdown-menu">
+                    <li><a href="#" onclick="AutoPartsApp.navigate('categories')">Tüm Parçalar</a></li>
+                    <li><a href="#">Canter</a></li>
+                    <li><a href="#">Isuzu</a></li>
+                    <li><a href="#">Mazda</a></li>
+                </ul>
+            </li>
             <li><a href="#" data-page="about">Hakkımızda</a></li>
             <li><a href="#" data-page="contact">İletişim</a></li>
         </ul>
