@@ -169,8 +169,9 @@ renderHome() {
     // Ürün kartının HTML kalıbı. Her ürün için bu kalıp tekrar tekrar kullanılır.
     // =========================================================================
     createProductCard(urun) {
+        // HATA BURADAYDI: product.id yerine parametre olarak gelen urun.id kullanmalısın.
         return `
-            <div class="product-card">
+            <div class="product-card" onclick="AutoPartsApp.showDetail(${urun.id})">
                 <div class="pc-img">${urun.icon}</div>
                 <div class="pc-body">
                     <div class="pc-cat">${urun.brand} - ${urun.subcat}</div>
@@ -265,6 +266,28 @@ renderHome() {
         document.getElementById("cartPanel").classList.toggle("open", acikMi);
         document.getElementById("cartOverlay").classList.toggle("open", acikMi);
     },
+        // Ürün detay sayfasını çiz
+    showDetail(id) {
+        const product = this.data.products.find(p => p.id === id);
+        if (!product) return;
+
+        this.root.innerHTML = `
+            <div class="info-page">
+                <button onclick="AutoPartsApp.navigate('home')" class="btn-secondary" style="margin-bottom:20px;">
+                    <i class="fas fa-arrow-left"></i> Geri Dön
+                </button>
+                <div class="detail-grid">
+                    <div class="detail-img">${product.icon}</div>
+                    <div class="detail-info">
+                        <h2>${product.name}</h2>
+                        <p style="color:var(--primary); font-size:1.5rem;">$${product.price}</p>
+                        <p>Bu parça, aracınızın performansını artırmak için özel olarak üretilmiştir. ${product.brand} kalite standartlarına tam uyumludur.</p>
+                        <button class="btn-primary" onclick="AutoPartsApp.addToCart(${product.id})">Sepete Ekle</button>
+                    </div>
+                </div>
+            </div>
+        `;
+    },
 
     // Sağ alttan çıkan uyarı mesajını oluşturan fonksiyon
     showNotification(mesaj) {
@@ -279,6 +302,7 @@ renderHome() {
         // 2500 milisaniye (2.5 saniye) sonra bu elemanı sayfadan sil (çöp toplama)
         setTimeout(() => uyariDivi.remove(), 2500);
     }
+
 };
 
 // =========================================================================
