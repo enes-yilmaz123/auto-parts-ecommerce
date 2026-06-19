@@ -3,10 +3,7 @@ const AutoPartsApp = {
     data: {
         // Ürünler bir "Dizi" (Array) içinde tutulur. Her ürün bir "Obje"dir (Object).
         products: [
-            {id:1, name:"Canter Full Face Cabin", brand:"Canter", subcat:"Cabin", price:1899.99, icon:"🚛"},
-            {id:2, name:"Canter Gearbox 5-Speed", brand:"Canter", subcat:"Gearbox", price:1250.00, icon:"⚙️"},
-            {id:3, name:"Canter 4D34 Engine",     brand:"Canter", subcat:"Engine", price:2450.00, icon:"🔩"},
-            {id:4, name:"Heavy Duty Caliper",     brand:"Universal", subcat:"Brake", price:189.99, icon:"🛞"}
+            {id:1, name:"Kabin", brand:"toyota", subcat:"asdf", price:1899.99, icon:"🚛"},
         ],
         // Kategoriler
         categories: {
@@ -24,14 +21,17 @@ const AutoPartsApp = {
         cart: [],             // Sepetteki ürünleri tutan boş dizi
         currentPage: 'home'   
     },
-
     // =========================================================================
     // 3. BAŞLATICI FONKSİYON (INIT)
     // =========================================================================
-    init() {
+    async init() {
         this.cacheDOM();     // Önce HTML etiketlerini bul ve hafızaya al
         this.bindEvents();   // Sonra butonları dinlemeye başla (tıklamaları bekle)
-        this.renderHome();   // Anasayfa tasarımını ekrana çiz
+        
+        // EKRANI ÇİZMEDEN ÖNCE DEPOYA (VERİTABANINA) GİT VE GERÇEK ÜRÜNLERİ GETİR!
+        await this.fetchProductsFromDatabase(); 
+        
+        this.renderHome();   // Ürünler geldikten sonra Anasayfa tasarımını ekrana çiz
         this.renderCart();   // Sepeti hesapla ve rozeti güncelle
     },
 
