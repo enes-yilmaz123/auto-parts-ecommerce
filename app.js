@@ -54,6 +54,7 @@ const AutoPartsApp = {
         document.getElementById("cartBtn").addEventListener("click", () => this.toggleCart(true));
         document.getElementById("cartClose").addEventListener("click", () => this.toggleCart(false));
         document.getElementById("cartOverlay").addEventListener("click", () => this.toggleCart(false));
+        
 
         // Menüdeki (Tüm Parçalar, Kategoriler vb.) tüm linkleri (a etiketlerini) bul
         const menuLinkleri = document.querySelectorAll('.nav-links a');
@@ -69,6 +70,7 @@ const AutoPartsApp = {
                 this.navigate(gidilecekSayfa);
             });
         });
+        
     },
 
     // =========================================================================
@@ -87,6 +89,7 @@ const AutoPartsApp = {
         else if (page === 'categories') this.renderCategories();
         else if (page === 'about') this.renderAbout();
         else if (page === 'contact') this.renderContact();
+        else if (page === 'admin') this.renderAdmin();
     },
 
     // =========================================================================
@@ -162,6 +165,97 @@ renderHome() {
 
     renderContact() {
         this.root.innerHTML = `<div class="info-page"><h2>İLETİŞİM</h2><p>kodlar@vebiz.com</p></div>`;
+    },
+    renderAdmin() {
+        this.root.innerHTML = `
+            <section class="section" style="max-width: 600px; margin: 0 auto;">
+                <h2 class="section-title">YÖNETİCİ <em>PANELİ</em></h2>
+                <div class="product-card" style="padding: 30px; cursor: default;">
+                    <form id="adminForm">
+                        <div style="margin-bottom: 15px;">
+                            <label style="color: var(--muted); font-size: 0.9rem;">Ürün Adı</label>
+                            <input type="text" id="aName" required style="width: 100%; padding: 10px; background: var(--bg4); border: 1px solid var(--border); color: var(--txt); border-radius: var(--r8);">
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div>
+                                <label style="color: var(--muted); font-size: 0.9rem;">Marka</label>
+                                <input type="text" id="aBrand" required style="width: 100%; padding: 10px; background: var(--bg4); border: 1px solid var(--border); color: var(--txt); border-radius: var(--r8);">
+                            </div>
+                            <div>
+                                <label style="color: var(--muted); font-size: 0.9rem;">Alt Kategori</label>
+                                <input type="text" id="aSubcat" required style="width: 100%; padding: 10px; background: var(--bg4); border: 1px solid var(--border); color: var(--txt); border-radius: var(--r8);">
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px;">
+                            <div>
+                                <label style="color: var(--muted); font-size: 0.9rem;">Fiyat ($)</label>
+                                <input type="number" id="aPrice" step="0.01" required style="width: 100%; padding: 10px; background: var(--bg4); border: 1px solid var(--border); color: var(--txt); border-radius: var(--r8);">
+                            </div>
+                            <div>
+                                <label style="color: var(--muted); font-size: 0.9rem;">İkon (Emoji)</label>
+                                <input type="text" id="aIcon" required style="width: 100%; padding: 10px; background: var(--bg4); border: 1px solid var(--border); color: var(--txt); border-radius: var(--r8);">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center;">Ürünü Veritabanına Ekle <i class="fas fa-database"></i></button>
+                    </form>
+                </div>
+            </section>
+        `;
+
+        // Form gönderilmeye çalışıldığında bizim dinleyiciyi devreye sokuyoruz
+        document.getElementById("adminForm").addEventListener("submit", (e) => this.submitNewProduct(e));
+    },
+    async fetchProductsFromDatabase() {
+        try {
+            // Backend sunucumuza gidip güncel ürünleri istiyoruz
+            const response = await fetch('http://localhost:8080/api/products');
+            const gercekUrunler = await response.json();
+            
+            // Veritabanından gelen gerçek ürünleri dükkanın hafızasına yazdırıyoruz
+            this.data.products = gercekUrunler;
+        } catch (error) {
+            console.error("Ürünler çekilirken bağlantı koptu:", error);
+        }
+    },
+    async submitNewProduct(event) {
+        // Sayfanın yenilenmesini (klasik form davranışı) engeller
+        event.preventDefault();
+
+        // 1. Kutulardaki yazıları toplayıp MongoDB kalıbımıza (Schema) uygun bir obje yapıyoruz
+        const yeniUrunPaketi = {
+            id: Date.now(), // Benzersiz olması için o anki zamanı milisaniye cinsinden ID yapar
+            name: document.getElementById('aName').value,
+            brand: document.getElementById('aBrand').value,
+            subcat: document.getElementById('aSubcat').value,
+            price: parseFloat(document.getElementById('aPrice').value),
+            icon: document.getElementById('aIcon').value
+        };
+
+        try {
+            // 2. Kuryeyi (Fetch) Backend'e POST isteğiyle yolluyoruz
+            const response = await fetch('http://localhost:8080/api/products', {
+                method: 'POST', // "Bana veri ver" değil, "Al bu veriyi kaydet" diyoruz
+                headers: {
+                    'Content-Type': 'application/json' // Sunucuya "Sana JSON dilinde veri yolluyorum" diyoruz
+                },
+                body: JSON.stringify(yeniUrunPaketi) // Objeyi metin paketine çeviriyoruz
+            });
+
+            if (response.ok) {
+                // 3. Veritabanı 201 Created döndürdüyse başarılıdır
+                this.showNotification("Ürün başarıyla MongoDB'ye eklendi!");
+                document.getElementById("adminForm").reset(); // Formun içini temizle
+                
+                // Ana sayfaya dön ve yeni ürünleri çek
+                await this.fetchProductsFromDatabase();
+                this.navigate('home');
+            } else {
+                this.showNotification("Hata: Ürün eklenemedi!");
+            }
+        } catch (error) {
+            console.error("Sunucuya ulaşılamadı:", error);
+            this.showNotification("Sunucu bağlantı hatası!");
+        }
     },
 
     // =========================================================================
